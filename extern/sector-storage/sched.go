@@ -489,6 +489,7 @@ func (sh *scheduler) trySched() {
 			info := sh.workers[wid].info
 
 			log.Debugf("SCHED try assign sqi:%d sector %d to window %d", sqi, task.sector.ID.Number, wnd)
+			log.Debugf("SCHED try assign wokers_info:%+v", info)
 
 			// TODO: allow bigger windows
 			if !windows[wnd].allocated.canHandleRequest(needRes, wid, "schedAssign", info) {
