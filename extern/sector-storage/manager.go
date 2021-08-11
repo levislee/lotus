@@ -346,10 +346,23 @@ func (m *Manager) SealPreCommit1(ctx context.Context, sector storage.SectorRef, 
 		}
 	}
 
+	// @todo yuan
+	log.Infof("")
+	log.Infof("")
+	log.Infof("[yuan] [manager]  start SealPreCommit1 isdeal?  before wait out:%s", out)
+	log.Infof("")
+	log.Infof("")
+
 	if wait { // already in progress
 		waitRes()
 		return out, waitErr
 	}
+	// @todo yuan
+	log.Infof("")
+	log.Infof("")
+	log.Infof("[yuan] [manager]  start SealPreCommit1 isdeal?  after wait  out:%s", out)
+	log.Infof("")
+	log.Infof("")
 
 	if err := m.index.StorageLock(ctx, sector.ID, storiface.FTUnsealed, storiface.FTSealed|storiface.FTCache); err != nil {
 		return nil, xerrors.Errorf("acquiring sector lock: %w", err)
@@ -406,10 +419,24 @@ func (m *Manager) SealPreCommit2(ctx context.Context, sector storage.SectorRef, 
 		}
 	}
 
+	// @todo yuan
+	log.Infof("")
+	log.Infof("")
+	log.Infof("[yuan] [manager]  start SealPreCommit2222 isdeal?  before wait out:%s", out)
+	log.Infof("")
+	log.Infof("")
+
 	if wait { // already in progress
 		waitRes()
 		return out, waitErr
 	}
+
+	// @todo yuan
+	log.Infof("")
+	log.Infof("")
+	log.Infof("[yuan] [manager]  start SealPreCommit2222 isdeal?  after wait out:%s", out)
+	log.Infof("")
+	log.Infof("")
 
 	if err := m.index.StorageLock(ctx, sector.ID, storiface.FTSealed, storiface.FTCache); err != nil {
 		return storage.SectorCids{}, xerrors.Errorf("acquiring sector lock: %w", err)
