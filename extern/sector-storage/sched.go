@@ -230,11 +230,16 @@ func (sh *scheduler) runSched() {
 
 		select {
 		case <-sh.workerChange:
+			// @todo yuan
+			log.Infof("==== [yuan] [runSched] ==== sh.workerChange ")
 			doSched = true
 		case dreq := <-sh.workerDisable:
 			toDisable = append(toDisable, dreq)
 			doSched = true
 		case req := <-sh.schedule:
+			// @todo yuan
+			log.Infof("==== [yuan] [runSched] ==== sh.schedule req")
+			log.Infof("==== [yuan] [runSched] ==== sh.schedule req:%+v", req)
 			sh.schedQueue.Push(req)
 			doSched = true
 
@@ -242,6 +247,8 @@ func (sh *scheduler) runSched() {
 				sh.testSync <- struct{}{}
 			}
 		case req := <-sh.windowRequests:
+			log.Infof("==== [yuan] [runSched] ==== sh.windowRequests req:")
+			log.Infof("==== [yuan] [runSched] ==== sh.windowRequests req:%+v", req)
 			sh.openWindows = append(sh.openWindows, req)
 			doSched = true
 		case ireq := <-sh.info:
@@ -398,6 +405,7 @@ func (sh *scheduler) trySched() {
 
 				// @todo yuan
 				if task.taskType == sealtasks.TTPreCommit1 || task.taskType == sealtasks.TTPreCommit2 {
+					log.Infof("==== [yuan] ==== [SCHED] [windowRequest] windowRequest:%+v", windowRequest)
 					log.Infof("==== [yuan] ==== [SCHED] [task] [for]")
 					log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker:%+v ", worker)
 					log.Infof("==== [yuan] ==== [SCHED] [task] [for] workerRpc:%+v ", worker.workerRpc)
