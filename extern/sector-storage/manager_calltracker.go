@@ -238,7 +238,8 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 		m.workLk.Unlock()
 		return nil, xerrors.Errorf("wrong callToWork mapping for call %s; expected %s, got %s", ws.WorkerCall, wid, wk)
 	}
-
+	// @todo yuan
+	log.Infof("==== [yuan] ==== callRes:%+v  ws.WorkerCall:%+v", m.callRes, ws.WorkerCall)
 	// make sure we don't have the result ready
 	cr, ok := m.callRes[ws.WorkerCall]
 	if ok {
@@ -277,7 +278,8 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 			log.Errorf("marking work as done: %+v", err)
 		}
 	}
-
+	// @todo yuan
+	log.Infof("==== [yuan] ==== m.results:%+v  wid:%+v", m.callRes, wid.String())
 	// the result can already be there if the work was running, manager restarted,
 	// and the worker has delivered the result before we entered waitWork
 	res, ok := m.results[wid]
@@ -287,6 +289,8 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 		return res.r, res.err
 	}
 
+	// @todo yuan
+	log.Infof("==== [yuan] ==== m.waitRes:%+v  wid:%+v", m.waitRes, wid.String())
 	ch, ok := m.waitRes[wid]
 	if !ok {
 		ch = make(chan struct{})
