@@ -381,9 +381,12 @@ func (sh *scheduler) trySched() {
 
 			task := (*sh.schedQueue)[sqi]
 			needRes := ResourceTable[task.taskType][task.sector.ProofType]
-			// @todo yuan
-			log.Infof("==== [yuan] ==== [SCHED] [task]")
-			log.Infof("==== [yuan] ==== [SCHED] [task] task:%+v ", task)
+			if task.taskType == sealtasks.TTCommit2 || task.taskType == sealtasks.TTCommit1 {
+				// @todo yuan
+				log.Infof("==== [yuan] ==== [SCHED] [task]")
+				log.Infof("==== [yuan] ==== [SCHED] [task] task:%+v ", task)
+			}
+
 			task.indexHeap = sqi
 			for wnd, windowRequest := range sh.openWindows {
 				worker, ok := sh.workers[windowRequest.worker]
@@ -394,9 +397,12 @@ func (sh *scheduler) trySched() {
 				}
 
 				// @todo yuan
-				log.Infof("==== [yuan] ==== [SCHED] [task] [for]")
-				log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker:%+v ", worker)
-				log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker.info:%+v ", worker.info)
+				if task.taskType == sealtasks.TTCommit2 || task.taskType == sealtasks.TTCommit1 {
+					log.Infof("==== [yuan] ==== [SCHED] [task] [for]")
+					log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker:%+v ", worker)
+					log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker.info:%+v ", worker.info)
+				}
+
 
 				if !worker.enabled {
 					log.Debugw("skipping disabled worker", "worker", windowRequest.worker)
