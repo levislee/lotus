@@ -315,16 +315,25 @@ func (m *Manager) SealPreCommit1(ctx context.Context, sector storage.SectorRef, 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	// @todo yuan
+	log.Infof("")
+	log.Infof("")
 	log.Infof("[yuan] [manager]  start SealPreCommit1")
 	log.Infof("[yuan] [manager]  start SealPreCommit1")
 	log.Infof("[yuan] [manager]  start SealPreCommit1")
 	log.Infof("[yuan] [manager]  start SealPreCommit1 %+v", sector)
+	log.Infof("")
+	log.Infof("")
 	wk, wait, cancel, err := m.getWork(ctx, sealtasks.TTPreCommit1, sector, ticket, pieces)
 	if err != nil {
 		return nil, xerrors.Errorf("getWork: %w", err)
 	}
 	defer cancel()
+	// @todo
+	log.Infof("")
+	log.Infof("")
 	log.Infof("[yuan] [manager]  start SealPreCommit1   worker:%+v", wk)
+	log.Infof("")
+	log.Infof("")
 	var waitErr error
 	waitRes := func() {
 		p, werr := m.waitWork(ctx, wk)
@@ -370,10 +379,15 @@ func (m *Manager) SealPreCommit2(ctx context.Context, sector storage.SectorRef, 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	// @todo yuan
+	log.Infof("")
+	log.Infof("")
 	log.Infof("[yuan] [manager]  start SealPreCommit2222")
 	log.Infof("[yuan] [manager]  start SealPreCommit2222")
 	log.Infof("[yuan] [manager]  start SealPreCommit2222")
 	log.Infof("[yuan] [manager]  start SealPreCommit2222 %+v", sector)
+	log.Infof("[yuan] [manager]  start SealPreCommit2222 phase1Out：%v", string(phase1Out))
+	log.Infof("")
+	log.Infof("")
 	wk, wait, cancel, err := m.getWork(ctx, sealtasks.TTPreCommit2, sector, phase1Out)
 	if err != nil {
 		return storage.SectorCids{}, xerrors.Errorf("getWork: %w", err)

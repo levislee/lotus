@@ -247,8 +247,8 @@ func (sh *scheduler) runSched() {
 				sh.testSync <- struct{}{}
 			}
 		case req := <-sh.windowRequests:
-			log.Infof("==== [yuan] [runSched] ==== sh.windowRequests req:")
-			log.Infof("==== [yuan] [runSched] ==== sh.windowRequests req:%+v", req)
+			log.Infof("==== [yuan] [runSched] ==== sh.windowRequests req log")
+			log.Infof("==== [yuan] [runSched] ==== sh.windowRequests req wokerStr:%+v  ", req.worker.String())
 			sh.openWindows = append(sh.openWindows, req)
 			doSched = true
 		case ireq := <-sh.info:
@@ -406,7 +406,7 @@ func (sh *scheduler) trySched() {
 				// @todo yuan
 				if task.taskType == sealtasks.TTPreCommit1 || task.taskType == sealtasks.TTPreCommit2 {
 					log.Infof("==== [yuan] ==== [SCHED] [windowRequest] windowRequest:%+v", windowRequest.worker.String())
-					wi,_ := worker.workerRpc.Info(context.Background())
+					wi,_ := worker.workerRpc.Info(task.ctx)
 					log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker:%+v  workerRpc:%+v   worker.info:%+v", worker, wi, worker.info)
 
 				}
