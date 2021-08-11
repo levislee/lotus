@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/filecoin-project/go-state-types/abi"
 	"os"
 	"time"
 
@@ -23,7 +24,7 @@ type WorkID struct {
 func (w WorkID) String() string {
 	return fmt.Sprintf("%s(%s)", w.Method, w.Params)
 }
-
+var wokerLog = map[abi.SectorID]string{}
 var _ fmt.Stringer = &WorkID{}
 
 type WorkStatus string
@@ -229,7 +230,31 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 		m.workLk.Unlock()
 		return nil, xerrors.Errorf("getting work status: %w", err)
 	}
-	log.Infof("==== [yuan] ==== ws after get ws:%+v", ws)
+	if wid.Method == sealtasks.TTPreCommit2 {
+		//wokerLog[ws.WorkerCall.Sector] = ws.WorkerHostname
+		if _,ok:=wokerLog[ws.WorkerCall.Sector];ok{
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi wokerLog:%+v", wokerLog)
+		} else {
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
+			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi wokerLog:%+v", wokerLog)
+		}
+
+	}
+	//log.Infof("==== [yuan] ==== ws after get ws:%+v", ws)
 
 	if ws.Status == wsStarted {
 		m.workLk.Unlock()
@@ -292,6 +317,9 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 	if ok {
 		done()
 		m.workLk.Unlock()
+		if wid.Method == sealtasks.TTPreCommit1 && res.err == nil {
+			wokerLog[ws.WorkerCall.Sector] = ws.WorkerHostname
+		}
 		return res.r, res.err
 	}
 
@@ -312,7 +340,9 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 		log.Infof("==== [yuan] ==== <-ch  results:%+v  wid:%+v", m.results, wid)
 		res := m.results[wid]
 		done()
-
+		if wid.Method == sealtasks.TTPreCommit1 && res.err == nil {
+			wokerLog[ws.WorkerCall.Sector] = ws.WorkerHostname
+		}
 		return res.r, res.err
 	case <-ctx.Done():
 		log.Infof("==== [yuan] ==== <-ctx.Done work result: %v", ctx.Err())

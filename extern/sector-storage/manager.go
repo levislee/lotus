@@ -28,7 +28,7 @@ import (
 var log = logging.Logger("advmgr")
 
 var ErrNoWorkers = errors.New("no suitable workers found")
-//var pc1Map = map[]
+
 type Worker interface {
 	storiface.WorkerCalls
 
