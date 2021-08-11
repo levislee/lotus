@@ -222,16 +222,21 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 	m.workLk.Lock()
 
 	var ws WorkState
+	// @todo yuan
+	log.Infof("==== [yuan] ==== m.Manager:%+v ", m)
+	log.Infof("==== [yuan] ==== ws before get ws:%+v wid.Params:%s,wid.Method:%+v,wid.string:%s", ws, wid.Params,wid.Method, wid.String())
 	if err := m.work.Get(wid).Get(&ws); err != nil {
 		m.workLk.Unlock()
 		return nil, xerrors.Errorf("getting work status: %w", err)
 	}
+	log.Infof("==== [yuan] ==== ws after get ws:%+v", ws)
 
 	if ws.Status == wsStarted {
 		m.workLk.Unlock()
 		return nil, xerrors.Errorf("waitWork called for work in 'started' state")
 	}
-
+	// @todo yuan
+	log.Infof("==== [yuan] ==== m.callToWork:%+v  ws.WorkerCall:%+v", m.callToWork, ws.WorkerCall)
 	// sanity check
 	wk := m.callToWork[ws.WorkerCall]
 	if wk != wid {
@@ -255,7 +260,8 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 
 			res := <-cr
 			delete(m.callRes, ws.WorkerCall)
-
+			// @todo yuan
+			log.Infof("==== [yuan] ==== res := <-cr  res:%+v ", res)
 			m.workLk.Unlock()
 			return res.r, res.err
 		}
@@ -279,7 +285,7 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 		}
 	}
 	// @todo yuan
-	log.Infof("==== [yuan] ==== m.results:%+v  wid:%+v", m.callRes, wid.String())
+	log.Infof("==== [yuan] ==== m.results:%+v  wid:%+v, wid.param:%+v", m.results, wid.String(), wid.Params)
 	// the result can already be there if the work was running, manager restarted,
 	// and the worker has delivered the result before we entered waitWork
 	res, ok := m.results[wid]
@@ -303,12 +309,13 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 	case <-ch:
 		m.workLk.Lock()
 		defer m.workLk.Unlock()
-
+		log.Infof("==== [yuan] ==== <-ch  results:%+v  wid:%+v", m.results, wid)
 		res := m.results[wid]
 		done()
 
 		return res.r, res.err
 	case <-ctx.Done():
+		log.Infof("==== [yuan] ==== <-ctx.Done work result: %v", ctx.Err())
 		return nil, xerrors.Errorf("waiting for work result: %w", ctx.Err())
 	}
 }
