@@ -352,7 +352,11 @@ func (sh *scheduler) trySched() {
 	queueLen := sh.schedQueue.Len()
 
 	log.Debugf("SCHED %d queued; %d open windows", queueLen, windowsLen)
-
+	// @todo yuan
+	log.Infof("==== [yuan] ==== [SCHED] ")
+	log.Infof("==== [yuan] ==== [SCHED] sh.openWindows:%+v", sh.openWindows)
+	log.Infof("==== [yuan] ==== [SCHED] sh.schedQueue:%+v", sh.schedQueue)
+	log.Infof("==== [yuan] ==== [SCHED] ")
 	if windowsLen == 0 || queueLen == 0 {
 		// nothing to schedule on
 		return
@@ -377,7 +381,9 @@ func (sh *scheduler) trySched() {
 
 			task := (*sh.schedQueue)[sqi]
 			needRes := ResourceTable[task.taskType][task.sector.ProofType]
-
+			// @todo yuan
+			log.Infof("==== [yuan] ==== [SCHED] [task]")
+			log.Infof("==== [yuan] ==== [SCHED] [task] task:%+v ", task)
 			task.indexHeap = sqi
 			for wnd, windowRequest := range sh.openWindows {
 				worker, ok := sh.workers[windowRequest.worker]
@@ -386,6 +392,11 @@ func (sh *scheduler) trySched() {
 					// TODO: How to move forward here?
 					continue
 				}
+
+				// @todo yuan
+				log.Infof("==== [yuan] ==== [SCHED] [task] [for]")
+				log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker:%+v ", worker)
+				log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker.info:%+v ", worker.info)
 
 				if !worker.enabled {
 					log.Debugw("skipping disabled worker", "worker", windowRequest.worker)
