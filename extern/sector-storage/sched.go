@@ -405,11 +405,10 @@ func (sh *scheduler) trySched() {
 
 				// @todo yuan
 				if task.taskType == sealtasks.TTPreCommit1 || task.taskType == sealtasks.TTPreCommit2 {
-					log.Infof("==== [yuan] ==== [SCHED] [windowRequest] windowRequest:%+v", windowRequest)
-					log.Infof("==== [yuan] ==== [SCHED] [task] [for]")
-					log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker:%+v ", worker)
-					log.Infof("==== [yuan] ==== [SCHED] [task] [for] workerRpc:%+v ", worker.workerRpc)
-					log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker.info:%+v ", worker.info)
+					log.Infof("==== [yuan] ==== [SCHED] [windowRequest] windowRequest:%+v", windowRequest.worker.String())
+					wi,_ := worker.workerRpc.Info(context.Background())
+					log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker:%+v  workerRpc:%+v   worker.info:%+v", worker, wi, worker.info)
+
 				}
 
 
