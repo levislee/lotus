@@ -388,7 +388,7 @@ func (sh *scheduler) trySched() {
 
 			task := (*sh.schedQueue)[sqi]
 			needRes := ResourceTable[task.taskType][task.sector.ProofType]
-			if task.taskType == sealtasks.TTCommit2 || task.taskType == sealtasks.TTCommit1 {
+			if task.taskType == sealtasks.TTPreCommit1 || task.taskType == sealtasks.TTPreCommit2 {
 				// @todo yuan
 				log.Infof("==== [yuan] ==== [SCHED] [task]")
 				log.Infof("==== [yuan] ==== [SCHED] [task] task:%+v ", task)
