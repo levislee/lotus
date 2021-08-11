@@ -355,6 +355,10 @@ func (m *Manager) SealPreCommit1(ctx context.Context, sector storage.SectorRef, 
 
 	if wait { // already in progress
 		waitRes()
+		// @todo yuan
+		log.Infof("")
+		log.Infof("[yuan] [manager]  start SealPreCommit1 isdeal?  in wait out:%s", out)
+		log.Infof("")
 		return out, waitErr
 	}
 	// @todo yuan
@@ -373,17 +377,31 @@ func (m *Manager) SealPreCommit1(ctx context.Context, sector storage.SectorRef, 
 	selector := newAllocSelector(m.index, storiface.FTCache|storiface.FTSealed, storiface.PathSealing)
 
 	err = m.sched.Schedule(ctx, sector, sealtasks.TTPreCommit1, selector, m.schedFetch(sector, storiface.FTUnsealed, storiface.PathSealing, storiface.AcquireMove), func(ctx context.Context, w Worker) error {
+		// @todo yuan
+		log.Infof("")
+		wi, werr:= w.Info(ctx)
+		log.Infof("[yuan] [manager]  start SealPreCommit1 isdeal?  in Schedule wi:%+v err:%v", wi, werr)
+		log.Infof("")
 		err := m.startWork(ctx, w, wk)(w.SealPreCommit1(ctx, sector, ticket, pieces))
 		if err != nil {
 			return err
 		}
 
 		waitRes()
+		// @todo yuan
+		log.Infof("")
+		log.Infof("[yuan] [manager]  start SealPreCommit1 isdeal?  in Schedule waitRes out:%s", out)
+		log.Infof("")
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
+
+	// @todo yuan
+	log.Infof("")
+	log.Infof("[yuan] [manager]  start SealPreCommit1 isdeal?  after Schedule out:%s", out)
+	log.Infof("")
 
 	return out, waitErr
 }
