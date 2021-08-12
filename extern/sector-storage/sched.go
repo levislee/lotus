@@ -50,6 +50,7 @@ func workerLogFilenamePath() string {
 }
 func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string){
 	wlRead()
+	log.Infof("==== [yuan] ==== wlStore wokerlog sealtasks.TTPreCommit1 iscome ##########")
 	if taskType == sealtasks.TTPreCommit1 {
 		log.Infof("==== [yuan] ==== wlStore wokerlog sealtasks.TTPreCommit1 befor %+v  ##########", workerLog)
 		// 添加记录
@@ -126,7 +127,7 @@ func wlRead(){
 }
 
 func wlCheck(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string) bool {
-	log.Info("==== [yuan] ==== wokerLog wlCheck isCome #####")
+	//log.Info("==== [yuan] ==== wokerLog wlCheck isCome #####")
 	wlRead()
 	if taskType == sealtasks.TTPreCommit2 {
 		log.Infof("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 workerLog[sectorId]:%v #####", workerLog[sectorId])
