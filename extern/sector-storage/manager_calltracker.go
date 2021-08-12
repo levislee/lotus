@@ -224,8 +224,11 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 
 	var ws WorkState
 	// @todo yuan
-	log.Infof("==== [yuan] ==== m.Manager:%+v ", m)
-	log.Infof("==== [yuan] ==== ws before get ws:%+v wid.Params:%s,wid.Method:%+v,wid.string:%s", ws, wid.Params,wid.Method, wid.String())
+	if wid.Method == sealtasks.TTPreCommit2 || wid.Method == sealtasks.TTPreCommit1 {
+		log.Infof("==== [yuan] ==== m.Manager:%+v ", m)
+		log.Infof("==== [yuan] ==== ws before get ws:%+v wid.Params:%s,wid.Method:%+v,wid.string:%s", ws, wid.Params,wid.Method, wid.String())
+	}
+
 	if err := m.work.Get(wid).Get(&ws); err != nil {
 		m.workLk.Unlock()
 		return nil, xerrors.Errorf("getting work status: %w", err)
@@ -261,7 +264,7 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 		return nil, xerrors.Errorf("waitWork called for work in 'started' state")
 	}
 	// @todo yuan
-	log.Infof("==== [yuan] ==== m.callToWork:%+v  ws.WorkerCall:%+v", m.callToWork, ws.WorkerCall)
+	//log.Infof("==== [yuan] ==== m.callToWork:%+v  ws.WorkerCall:%+v", m.callToWork, ws.WorkerCall)
 	// sanity check
 	wk := m.callToWork[ws.WorkerCall]
 	if wk != wid {
@@ -269,7 +272,7 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 		return nil, xerrors.Errorf("wrong callToWork mapping for call %s; expected %s, got %s", ws.WorkerCall, wid, wk)
 	}
 	// @todo yuan
-	log.Infof("==== [yuan] ==== callRes:%+v  ws.WorkerCall:%+v", m.callRes, ws.WorkerCall)
+	//log.Infof("==== [yuan] ==== callRes:%+v  ws.WorkerCall:%+v", m.callRes, ws.WorkerCall)
 	// make sure we don't have the result ready
 	cr, ok := m.callRes[ws.WorkerCall]
 	if ok {
@@ -286,7 +289,7 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 			res := <-cr
 			delete(m.callRes, ws.WorkerCall)
 			// @todo yuan
-			log.Infof("==== [yuan] ==== res := <-cr  res:%+v ", res)
+			log.Infof("==== [yuan] ==== res := <-cr  ")
 			m.workLk.Unlock()
 			return res.r, res.err
 		}
