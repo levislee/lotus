@@ -3,6 +3,7 @@ package sectorstorage
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -39,7 +40,7 @@ type wokerLog struct {
 	Time int64
 }
 
-var workerLog = map[abi.SectorID]wokerLog{}
+var workerLog = map[string]wokerLog{}
 var workerLogRead = false
 var workerLogLock sync.Mutex
 var workerLogReadLock sync.Mutex
@@ -54,7 +55,7 @@ func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string
 	if taskType == sealtasks.TTPreCommit1 {
 		log.Infof("==== [yuan] ==== wlStore wokerlog sealtasks.TTPreCommit1 befor %+v  ##########", workerLog)
 		// 添加记录
-		workerLog[sectorId] = wokerLog{
+		workerLog[fmt.Sprintf("%d_%d", sectorId.Miner, sectorId.Number)] = wokerLog{
 			Hostname: hostname,
 			Time: time.Now().Unix(),
 		}
@@ -130,9 +131,10 @@ func wlCheck(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string
 	//log.Info("==== [yuan] ==== wokerLog wlCheck isCome #####")
 	wlRead()
 	if taskType == sealtasks.TTPreCommit2 {
-		log.Infof("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 workerLog[sectorId]:%v #####", workerLog[sectorId])
-		if _,ok:=workerLog[sectorId];ok{
-			if workerLog[sectorId].Hostname != hostname {
+		mk := fmt.Sprintf("%d_%d", sectorId.Miner, sectorId.Number)
+		log.Infof("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 workerLog[sectorId]:%v #####", workerLog[mk])
+		if _,ok:=workerLog[mk];ok{
+			if workerLog[mk].Hostname != hostname {
 				log.Info("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 Hostname false #####")
 				return false
 			}
