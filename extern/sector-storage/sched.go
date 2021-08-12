@@ -66,7 +66,7 @@ func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string
 			str, err := json.Marshal(workerLog)
 			if err == nil {
 				err = ioutil.WriteFile(workerLogFilenamePath(), str, 0644)
-				log.Info("==== [yuan] ==== write wokerlog str:%s err:%v  ##########", str, err)
+				log.Info("==== [yuan] ==== write wokerlog str:%v err:%v  ##########", err)
 			} else {
 				log.Warnf("==== [yuan] ==== write wokerlog to file err:%v  ##########", err)
 			}
@@ -135,8 +135,8 @@ func wlCheck(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string
 		log.Infof("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 workerLog[sectorId]:%v #####", workerLog[mk])
 		if _,ok:=workerLog[mk];ok{
 			// @todo [yuan]
-			//if workerLog[mk].Hostname != hostname {
-			if workerLog[mk].Hostname == hostname {
+			if workerLog[mk].Hostname != hostname {
+			//if workerLog[mk].Hostname == hostname {
 				log.Info("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 Hostname false #####")
 				return false
 			}
