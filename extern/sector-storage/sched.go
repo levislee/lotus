@@ -89,15 +89,16 @@ func wlRead(){
 
 		var file *os.File
 		if _, err := os.Stat(workerLogFilenamePath()); os.IsNotExist(err) {
-			file, err = os.Open(workerLogFilenamePath())
-			if err != nil {
-				log.Warnf("==== [yuan] ==== read wokerlog fail err:%v  ##########", err)
-				return
-			}
-		} else {
 			file, err = os.Create(workerLogFilenamePath())
 			if err != nil {
 				log.Warnf("==== [yuan] ==== read wokerlog Create err:%v  ##########", err)
+				return
+			}
+
+		} else {
+			file, err = os.Open(workerLogFilenamePath())
+			if err != nil {
+				log.Warnf("==== [yuan] ==== read wokerlog fail err:%v  ##########", err)
 				return
 			}
 		}
