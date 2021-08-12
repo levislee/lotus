@@ -320,6 +320,11 @@ func (sh *scheduler) runSched() {
 	// @todo [yuan] read workerLog
 	wlRead()
 	log.Info("==== [yuan] [runSched] workerLog wlRead #######")
+	log.Info("==== [yuan] [runSched] workerLog wlRead #######")
+	log.Info("==== [yuan] [runSched] workerLog wlRead #######")
+	log.Info("==== [yuan] [runSched] workerLog wlRead #######")
+	log.Info("==== [yuan] [runSched] workerLog wlRead #######")
+	log.Info("==== [yuan] [runSched] workerLog wlRead #######")
 
 	for {
 		var doSched bool
@@ -456,11 +461,11 @@ func (sh *scheduler) trySched() {
 	queueLen := sh.schedQueue.Len()
 
 	log.Debugf("SCHED %d queued; %d open windows", queueLen, windowsLen)
-	// @todo yuan
-	log.Infof("==== [yuan] ==== [SCHED] ")
-	log.Infof("==== [yuan] ==== [SCHED] sh.openWindows:%+v", sh.openWindows)
-	log.Infof("==== [yuan] ==== [SCHED] sh.schedQueue:%+v", sh.schedQueue)
-	log.Infof("==== [yuan] ==== [SCHED] ")
+	//// @todo yuan
+	//log.Infof("==== [yuan] ==== [SCHED] ")
+	//log.Infof("==== [yuan] ==== [SCHED] sh.openWindows:%+v", sh.openWindows)
+	//log.Infof("==== [yuan] ==== [SCHED] sh.schedQueue:%+v", sh.schedQueue)
+	//log.Infof("==== [yuan] ==== [SCHED] ")
 	if windowsLen == 0 || queueLen == 0 {
 		// nothing to schedule on
 		return
@@ -488,7 +493,7 @@ func (sh *scheduler) trySched() {
 			if task.taskType == sealtasks.TTPreCommit1 || task.taskType == sealtasks.TTPreCommit2 {
 				// @todo yuan
 				log.Infof("==== [yuan] ==== [SCHED] [task]")
-				log.Infof("==== [yuan] ==== [SCHED] [task] task:%+v ", task)
+				//log.Infof("==== [yuan] ==== [SCHED] [task] task:%+v ", task)
 			}
 
 			task.indexHeap = sqi
@@ -503,11 +508,14 @@ func (sh *scheduler) trySched() {
 				// @todo yuan
 				if task.taskType == sealtasks.TTPreCommit1 || task.taskType == sealtasks.TTPreCommit2 {
 					log.Infof("==== [yuan] ==== [SCHED] [windowRequest] windowRequest:%+v", windowRequest.worker.String())
-					wi,_ := worker.workerRpc.Info(task.ctx)
-					log.Infof("==== [yuan] ==== [SCHED] [task] [for] worker:%+v  workerRpc:%+v   worker.info:%+v", worker, wi, worker.info)
+					log.Infof("==== [yuan] ==== [SCHED] [task] [for] wlCheck:%v   worker.info:%+v", wlCheck(task.taskType, task.sector.ID, worker.info.Hostname), worker.info)
 
 				}
 
+				// @todo [yuan] check hostname is same machine
+				if !wlCheck(task.taskType, task.sector.ID, worker.info.Hostname) {
+					continue
+				}
 
 				if !worker.enabled {
 					log.Debugw("skipping disabled worker", "worker", windowRequest.worker)
