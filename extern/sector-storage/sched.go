@@ -134,7 +134,9 @@ func wlCheck(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string
 		mk := fmt.Sprintf("%d_%d", sectorId.Miner, sectorId.Number)
 		log.Infof("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 workerLog[sectorId]:%v #####", workerLog[mk])
 		if _,ok:=workerLog[mk];ok{
-			if workerLog[mk].Hostname != hostname {
+			// @todo [yuan]
+			//if workerLog[mk].Hostname != hostname {
+			if workerLog[mk].Hostname == hostname {
 				log.Info("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 Hostname false #####")
 				return false
 			}
