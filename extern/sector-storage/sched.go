@@ -76,9 +76,18 @@ func wlRead(){
 		defer  workerLogLock.Unlock()
 
 		file, err := os.Open(workerLogFilename)
-		if err != nil {
-			log.Warnf("==== [yuan] ==== read wokerlog fail err:%v  ##########", err)
-			return
+		if err != nil   {
+			if !os.IsNotExist(err) {
+				log.Warnf("==== [yuan] ==== read wokerlog fail err:%v  ##########", err)
+				return
+			} else {
+				file, err = os.Create(workerLogFilename)
+				if err != nil {
+					log.Warnf("==== [yuan] ==== read wokerlog Create err:%v  ##########", err)
+					return
+				}
+			}
+
 		}
 		defer file.Close()
 		content, err := ioutil.ReadAll(file)
