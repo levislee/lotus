@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
+	"os/user"
 	"sort"
 	"sync"
 	"time"
@@ -42,7 +43,11 @@ var workerLog = map[abi.SectorID]wokerLog{}
 var workerLogRead = false
 var workerLogLock sync.Mutex
 var workerLogReadLock sync.Mutex
-var workerLogFilename = "~/.lotus_info.conf"
+var workerLogFilename = ".sealing_lotus_config"
+var workerLogBasePath = ""
+func workerLogFilenamePath() string {
+	return workerLogBasePath+ "/"+workerLogFilename
+}
 func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string){
 	wlRead()
 	if taskType == sealtasks.TTPreCommit1 {
@@ -58,7 +63,7 @@ func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string
 			defer  workerLogLock.Unlock()
 			str, err := json.Marshal(workerLog)
 			if err == nil {
-				_ = ioutil.WriteFile(workerLogFilename, str, 0644)
+				_ = ioutil.WriteFile(workerLogFilenamePath(), str, 0644)
 				log.Info("==== [yuan] ==== write wokerlog success  ##########")
 			} else {
 				log.Warnf("==== [yuan] ==== write wokerlog to file err:%v  ##########", err)
@@ -75,21 +80,29 @@ func wlRead(){
 		workerLogLock.Lock()
 		defer  workerLogLock.Unlock()
 
-		file, err := os.Open(workerLogFilename)
-		if err != nil   {
-			if !os.IsNotExist(err) {
+		if len(workerLogBasePath) == 0 {
+			u, err := user.Current()
+			if nil == err {
+				workerLogBasePath = u.HomeDir
+			}
+		}
+
+		var file *os.File
+		if _, err := os.Stat(workerLogFilenamePath()); os.IsNotExist(err) {
+			file, err = os.Open(workerLogFilenamePath())
+			if err != nil {
 				log.Warnf("==== [yuan] ==== read wokerlog fail err:%v  ##########", err)
 				return
-			} else {
-				file, err = os.Create(workerLogFilename)
-				if err != nil {
-					log.Warnf("==== [yuan] ==== read wokerlog Create err:%v  ##########", err)
-					return
-				}
 			}
-
+		} else {
+			file, err = os.Create(workerLogFilenamePath())
+			if err != nil {
+				log.Warnf("==== [yuan] ==== read wokerlog Create err:%v  ##########", err)
+				return
+			}
 		}
 		defer file.Close()
+
 		content, err := ioutil.ReadAll(file)
 		if err == nil {
 			err = json.Unmarshal(content, &workerLog)
