@@ -65,8 +65,8 @@ func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string
 			defer  workerLogLock.Unlock()
 			str, err := json.Marshal(workerLog)
 			if err == nil {
-				_ = ioutil.WriteFile(workerLogFilenamePath(), str, 0644)
-				log.Info("==== [yuan] ==== write wokerlog success  ##########")
+				err = ioutil.WriteFile(workerLogFilenamePath(), str, 0644)
+				log.Info("==== [yuan] ==== write wokerlog str:%s err:%v  ##########", str, err)
 			} else {
 				log.Warnf("==== [yuan] ==== write wokerlog to file err:%v  ##########", err)
 			}
