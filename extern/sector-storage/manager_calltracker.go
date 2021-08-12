@@ -139,26 +139,11 @@ func (m *Manager) getWork(ctx context.Context, method sealtasks.TaskType, params
 			}
 
 			var ws WorkState
-			if wid.Method == sealtasks.TTPreCommit1 || wid.Method == sealtasks.TTPreCommit2 {
-				log.Infof("==== [yuan] ==== before m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== before m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== before m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== before m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== before m.work.Get(wid).Get(&ws) wid:%+v", wid)
-				log.Infof("==== [yuan] ==== before m.work.Get(wid).Get(&ws) ws:%+v", ws)
-			}
 			if err := m.work.Get(wid).Get(&ws); err != nil {
 				log.Errorf("cancel: get work %s: %+v", wid, err)
 				return
 			}
-			if wid.Method == sealtasks.TTPreCommit1 || wid.Method == sealtasks.TTPreCommit2 {
-				log.Infof("==== [yuan] ==== after m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== after m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== after m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== after m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== after m.work.Get(wid).Get(&ws) ")
-				log.Infof("==== [yuan] ==== after m.work.Get(wid).Get(&ws) ws:%+v wid:%+v", ws, wid)
-			}
+
 			switch ws.Status {
 			case wsStarted:
 				log.Warnf("canceling started (not running) work %s", wid)

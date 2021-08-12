@@ -46,12 +46,13 @@ var workerLogFilename = "~/.lotus_info.conf"
 func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string){
 	wlRead()
 	if taskType == sealtasks.TTPreCommit1 {
+		log.Infof("==== [yuan] ==== wlStore wokerlog sealtasks.TTPreCommit1 befor %+v  ##########", workerLog)
 		// 添加记录
 		workerLog[sectorId] = wokerLog{
 			Hostname: hostname,
 			Time: time.Now().Unix(),
 		}
-
+		log.Infof("==== [yuan] ==== wlStore wokerlog sealtasks.TTPreCommit1 after %+v  ##########", workerLog)
 		go func() {
 			workerLogLock.Lock()
 			defer  workerLogLock.Unlock()
@@ -59,6 +60,8 @@ func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string
 			if err == nil {
 				_ = ioutil.WriteFile(workerLogFilename, str, 0644)
 				log.Info("==== [yuan] ==== write wokerlog success  ##########")
+			} else {
+				log.Warnf("==== [yuan] ==== write wokerlog to file err:%v  ##########", err)
 			}
 		}()
 	}
@@ -100,13 +103,17 @@ func wlRead(){
 }
 
 func wlCheck(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string) bool {
+	log.Info("==== [yuan] ==== wokerLog wlCheck isCome #####")
 	wlRead()
 	if taskType == sealtasks.TTPreCommit2 {
+		log.Infof("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 workerLog[sectorId]:%v #####", workerLog[sectorId])
 		if _,ok:=workerLog[sectorId];ok{
 			if workerLog[sectorId].Hostname != hostname {
+				log.Info("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 Hostname false #####")
 				return false
 			}
 		}
+		log.Info("==== [yuan] ==== wokerLog wlCheck TTPreCommit2 is true #####")
 	}
 
 	return true
@@ -312,6 +319,7 @@ func (sh *scheduler) runSched() {
 
 	// @todo [yuan] read workerLog
 	wlRead()
+	log.Info("==== [yuan] [runSched] workerLog wlRead #######")
 
 	for {
 		var doSched bool
