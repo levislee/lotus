@@ -258,15 +258,19 @@ func (m *Sealing) handlePreCommit1(ctx statemachine.Context, sector SectorInfo) 
 }
 
 func (m *Sealing) handlePreCommit2(ctx statemachine.Context, sector SectorInfo) error {
-	cids, err := m.sealer.SealPreCommit2(sector.sealingCtx(ctx.Context()), m.minerSector(sector.SectorType, sector.SectorNumber), sector.PreCommit1Out)
-	if err != nil {
-		return ctx.Send(SectorSealPreCommit2Failed{xerrors.Errorf("seal pre commit(2) failed: %w", err)})
-	}
 	// @todo yuan
 	log.Infof("[yuan] [manager]   handlePreCommit2222")
 	log.Infof("[yuan] [manager]   handlePreCommit2222")
 	log.Infof("[yuan] [manager]   handlePreCommit2222")
 	log.Infof("[yuan] [manager]   handlePreCommit2222 sector %+v", sector)
+	//log.Infof("[yuan] [manager]   handlePreCommit2222 sector %+v", sector.CommR)
+
+
+	cids, err := m.sealer.SealPreCommit2(sector.sealingCtx(ctx.Context()), m.minerSector(sector.SectorType, sector.SectorNumber), sector.PreCommit1Out)
+	if err != nil {
+		return ctx.Send(SectorSealPreCommit2Failed{xerrors.Errorf("seal pre commit(2) failed: %w", err)})
+	}
+
 	if cids.Unsealed == cid.Undef {
 		return ctx.Send(SectorSealPreCommit1Failed{xerrors.Errorf("seal pre commit(2) returned undefined CommD")})
 	}

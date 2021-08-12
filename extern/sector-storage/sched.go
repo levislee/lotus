@@ -2,7 +2,10 @@ package sectorstorage
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"math/rand"
+	"os"
 	"sort"
 	"sync"
 	"time"
@@ -27,6 +30,89 @@ var InitWait = 3 * time.Second
 var (
 	SchedWindows = 2
 )
+
+
+// #### yuan ####
+type wokerLog struct {
+	Hostname string
+	Time int64
+}
+
+var workerLog = map[abi.SectorID]wokerLog{}
+var workerLogRead = false
+var workerLogLock sync.Mutex
+var workerLogReadLock sync.Mutex
+var workerLogFilename = "~/.lotus_info.conf"
+func wlStore(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string){
+	wlRead()
+	if taskType == sealtasks.TTPreCommit1 {
+		// 添加记录
+		workerLog[sectorId] = wokerLog{
+			Hostname: hostname,
+			Time: time.Now().Unix(),
+		}
+
+		go func() {
+			workerLogLock.Lock()
+			defer  workerLogLock.Unlock()
+			str, err := json.Marshal(workerLog)
+			if err == nil {
+				_ = ioutil.WriteFile(workerLogFilename, str, 0644)
+				log.Info("==== [yuan] ==== write wokerlog success  ##########")
+			}
+		}()
+	}
+
+}
+
+func wlRead(){
+	workerLogReadLock.Lock()
+	defer workerLogReadLock.Unlock()
+	if !workerLogRead {
+		workerLogLock.Lock()
+		defer  workerLogLock.Unlock()
+
+		file, err := os.Open(workerLogFilename)
+		if err != nil {
+			log.Warnf("==== [yuan] ==== read wokerlog fail err:%v  ##########", err)
+			return
+		}
+		defer file.Close()
+		content, err := ioutil.ReadAll(file)
+		if err == nil {
+			err = json.Unmarshal(content, &workerLog)
+
+			log.Infof("==== [yuan] ==== read wokerlog success workerLog:%+v  ##########", workerLog)
+			nowtime := time.Now().Unix()
+			for k, val := range workerLog {
+				if val.Time + 86400 * 2 <= nowtime {
+					delete(workerLog, k)
+				}
+			}
+			workerLogRead = true
+
+		} else {
+			log.Warnf("==== [yuan] ==== read wokerlog ioutil.ReadAll false err:%v  ##########", err)
+		}
+
+	}
+
+}
+
+func wlCheck(taskType sealtasks.TaskType, sectorId abi.SectorID, hostname string) bool {
+	wlRead()
+	if taskType == sealtasks.TTPreCommit2 {
+		if _,ok:=workerLog[sectorId];ok{
+			if workerLog[sectorId].Hostname != hostname {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+// #### yuan ####
+
 
 func getPriority(ctx context.Context) int {
 	sp := ctx.Value(SchedPriorityKey)
@@ -224,6 +310,9 @@ func (sh *scheduler) runSched() {
 	iw := time.After(InitWait)
 	var initialised bool
 
+	// @todo [yuan] read workerLog
+	wlRead()
+
 	for {
 		var doSched bool
 		var toDisable []workerDisableReq
@@ -419,6 +508,11 @@ func (sh *scheduler) trySched() {
 
 				// TODO: allow bigger windows
 				if !windows[wnd].allocated.canHandleRequest(needRes, windowRequest.worker, "schedAcceptable", worker.info) {
+					continue
+				}
+
+				// @todo [yuan] check hostname is same machine
+				if !wlCheck(task.taskType, task.sector.ID, worker.info.Hostname) {
 					continue
 				}
 
