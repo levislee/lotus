@@ -244,6 +244,9 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
 			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi bool:true")
 			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] pc1 and pc2 is same fuwuqi wokerLog:%+v", wokerLog)
+
+			m.workLk.Unlock()
+			return nil, xerrors.Errorf("getting work error pc1 and pc2 is same fuwuqi")
 		} else {
 			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
 			log.Infof("==== [yuan] ==== [smsmsmsmsmsmsmsmsm!!!!] is same fuwuqi bool:[FALSE   !!!]")
@@ -340,7 +343,7 @@ func (m *Manager) waitWork(ctx context.Context, wid WorkID) (interface{}, error)
 	case <-ch:
 		m.workLk.Lock()
 		defer m.workLk.Unlock()
-		log.Infof("==== [yuan] ==== <-ch  results:%+v  wid:%+v", m.results, wid)
+		log.Infof("==== [yuan] ==== <-ch  results  wid:%+v", wid)
 		res := m.results[wid]
 		done()
 		if wid.Method == sealtasks.TTPreCommit1 && res.err == nil {
